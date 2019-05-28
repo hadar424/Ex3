@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewBag.Title = "display";
+}
+
+<h2>display</h2>
+
+
+<script>
+    var IntervalTime = @Session["time"] * 1000
+    myTimer = (function () {
+        $.post( "@Url.Action("GetInfo")").done(function (xml) {
+                var xmlDoc = $.parseXML( xml ),
+                $xml = $( xmlDoc ),
+                lon = $xml.find( "Lon" ).text();
+                lan = $xml.find( "Lat" ).text();
+               
+
+                $("#lonValue").text(lon);
+                $("#lanValue").text(lan);
+
+        });
+    });
+
+    setInterval(myTimer, IntervalTime);
+    myTimer();
+
+    $("#btnSearch").click(function () {
+        var input = {
+            name: $("#NameID").val(),
+        };
+        $.post("@Url.Action("Search", "First")", input).done(function (data) {
+            var xmlDoc = $.parseXML(data),
+                $xml = $(xmlDoc),
+                FirstName = $xml.find("FirstName").text();
+            LastName = $xml.find("LastName").text();
+            Salary = $xml.find("Salary").text();
+
+            $("#lstProducts").append("<li>" + FirstName + " " + LastName + " : $" + Salary + "</li>");
+        });
+    });
+
+</script>
+
+

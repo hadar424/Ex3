@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Xml;
 
 namespace Ex3.Models
 {
@@ -16,6 +17,7 @@ namespace Ex3.Models
     {
         private int port;
         private string ip;
+        private int time;
         private NetworkStream stream;
         private Socket client;
         private StreamReader reader;
@@ -53,6 +55,11 @@ namespace Ex3.Models
             set { ip = value; }
         }
 
+        public int Time
+        {
+            get { return time; }
+            set { time = value; }
+        }
 
         public void Start()
         {
@@ -88,7 +95,7 @@ namespace Ex3.Models
             return double.Parse(parseString);
         }
 
-        public void GetInfo()
+        public string GetInfo()
         {
             string lon = "";
             string lan = "";
@@ -114,28 +121,36 @@ namespace Ex3.Models
 
                 // send the massage to the simulator 
                 stream.Write(bufferThrottle, 0, bufferThrottle.Length);
-                // get lan
+                // get throttle
                 throttle = reader.ReadLine();
 
                 // send the massage to the simulator 
                 stream.Write(bufferRudder, 0, bufferRudder.Length);
-                // get lan
+                // get rudder
                 rudder = reader.ReadLine();
 
-                double lonValue = HandleInfo(lon);
-                double lanValue = HandleInfo(lan);
-                double throttleValue = HandleInfo(throttle);
-                double rudderValue = HandleInfo(rudder);
-                Debug.WriteLine(lonValue + " " + lanValue);
-                lon = "";
-                lan = "";
-                throttle = "";
-                rudder = "";
+                string data = lon + " " + lan + " " + throttle + " " + rudder;
+                Debug.WriteLine(data);
 
-
+                return data;
             }
+            return "";
         }
 
+        private void ToXml(Double info)
+        {
+            //Initiate XML stuff
+            StringBuilder sb = new StringBuilder();
+            XmlWriterSettings settings = new XmlWriterSettings();
+            XmlWriter writer = XmlWriter.Create(sb, settings);
+
+            writer.WriteStartDocument();
+            writer.WriteStartElement("Lon");
+            writer.WriteString(info.ToString());
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Flush();
+        }
 
 
 

@@ -77,30 +77,18 @@ namespace Ex3.Models
             commandThread.Start();
         }
 
-        public void HandleInfo(string info)
+        public double HandleInfo(string info)
         {
-            if (info != null)
-            {
-                int first = info.IndexOf(",");
-                int second = info.IndexOf(",", info.IndexOf(",") + 1);
-                // get the substring of the lon value
-                string lon = info.Substring(0, first - 1);
-                // get the substring of the lat value
-                string lat = info.Substring(first + 1, second - first - 1);
-
-                // send lon and lat
-                /*
-                // convert lon from string to float
-                FlightBoardViewModel.Instance.Lon = float.Parse(lon);
-                // convert lat from string to float
-                FlightBoardViewModel.Instance.Lat = float.Parse(lat);
-                */
-            }
+            string parseString = "";
+            string[] values = info.Split('\'');
+            parseString = values[1];
+            return double.Parse(parseString);
         }
 
         public void GetInfo()
         {
-            string info = "";
+            string lon = "";
+            string lan = "";
             reader = new StreamReader(stream);
             while (client.Connected)
             {
@@ -110,19 +98,19 @@ namespace Ex3.Models
                 // send the massage to the simulator 
                 stream.Write(bufferLon, 0, bufferLon.Length);
                 // get lon
-                info = reader.ReadLine();
-                Debug.WriteLine(info);
+                lon = reader.ReadLine();
                 // initialize info buffer
-                info = "";
+                lon = "";
 
                 // send the massage to the simulator 
                 stream.Write(bufferLan, 0, bufferLan.Length);
                 // get lan
-                info = reader.ReadLine();
-                //HandleInfo(info);
-                Debug.WriteLine(info);
+                lan = reader.ReadLine();
                 // initialize info buffer
-                info = "";
+                lan = "";
+
+                double lonValue = HandleInfo(lon);
+                double lanValue = HandleInfo(lan);
 
             }
         }

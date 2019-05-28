@@ -12,21 +12,23 @@ namespace Ex3.Controllers
 {
     public class FirstController : Controller
     {
-        // GET: First
         public ActionResult Index()
         {
-            ViewBag.ip = "127.0.0.1";
-            ViewBag.port = "5402";
-            CommandChannel.Instance.ServerIP = "127.0.0.1";
-            CommandChannel.Instance.CommandPort = 5402;
-            Debug.WriteLine("start");
+            return View();
+
+        }
+
+        // GET: First
+        public ActionResult Map(string ip, int port)
+        {
+            ViewBag.ip = ip;
+            ViewBag.port = port;
+            CommandChannel.Instance.ServerIP = ip;
+            CommandChannel.Instance.CommandPort = port;
             CommandChannel.Instance.Start();
             string data = CommandChannel.Instance.GetInfo();
-            Debug.WriteLine("data !!!!!!!!! " + data);
             float lon = getData(data, 0);
             float lat = getData(data, 1);
-            Debug.WriteLine("lon !!!!!!!!! " + lon.ToString());
-            Debug.WriteLine("lat !!!!!!!!! " + lat.ToString());
 
             ViewBag.lon = lon;
             ViewBag.lat = lat;
@@ -36,24 +38,30 @@ namespace Ex3.Controllers
 
         public float getData(string line, int index)
         {
-            Debug.WriteLine("getData");
             string parseString = "";
             string[] values = line.Split(' ');
             parseString = values[index];
-            Debug.WriteLine("parseString " + parseString);
             return float.Parse(parseString);
         }
 
         public ActionResult display(string ip, int port, int time)
         {
-
-            ViewBag.ip = "127.0.0.1";
-            ViewBag.port = "5402";
-            CommandChannel.Instance.ServerIP = "127.0.0.1";
-            CommandChannel.Instance.CommandPort = 5402;
+            ViewBag.ip = ip;
+            ViewBag.port = port;
+            CommandChannel.Instance.ServerIP = ip;
+            CommandChannel.Instance.CommandPort = port;
             CommandChannel.Instance.Time = time;
-            Debug.WriteLine("start");
             CommandChannel.Instance.Start();
+
+
+            string data = CommandChannel.Instance.GetInfo();
+            Debug.WriteLine("before getData");
+            float lon = getData(data, 0);
+            float lat = getData(data, 1);
+            Debug.WriteLine("after getData");
+
+            ViewBag.lon = lon;
+            ViewBag.lat = lat;
 
             // read from file
             Session["time"] = time;
@@ -61,29 +69,33 @@ namespace Ex3.Controllers
             return View();
         }
 
-        public string GetInfo()
+        [HttpPost]
+        public string GetLonLat()
         {
-            return CommandChannel.Instance.GetInfo();
+            Debug.WriteLine("GetLonLat");
+             string data = CommandChannel.Instance.GetInfo();
+            
+
+            return ToXml(data);
         }
+
         private string ToXml(string data)
         {
+            Debug.WriteLine("ToXml");
+
             //Initiate XML stuff
             StringBuilder sb = new StringBuilder();
             XmlWriterSettings settings = new XmlWriterSettings();
             XmlWriter writer = XmlWriter.Create(sb, settings);
-            // parse  data string 
-            string lon = "";
-            string lat = "";
-            string rudder = "";
-            string throttle = "";
+            // parse data string
+            Random rnd = new Random();
+            float lon = getData(data, 0) + rnd.Next(50);
+            float lat = getData(data, 1) + rnd.Next(50);
 
             writer.WriteStartDocument();
-            writer.WriteStartElement("Data");
             writer.WriteStartElement("Sampling");
-            writer.WriteElementString("Lon", lon);
-            writer.WriteElementString("Lat", lat);
-            writer.WriteElementString("Throttle", throttle);
-            writer.WriteElementString("Rudder", rudder);
+            writer.WriteElementString("Lon", lon.ToString());
+            writer.WriteElementString("Lat", lat.ToString());
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Flush();

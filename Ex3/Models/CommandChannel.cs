@@ -132,8 +132,7 @@ namespace Ex3.Models
 
                 string data = HandleInfo(lon).ToString() + " " + HandleInfo(lat).ToString() + " " +
                      HandleInfo(throttle).ToString() + " " + HandleInfo(rudder).ToString();
-                Debug.WriteLine(data);
-
+      
                 return data;
             }
             return "";

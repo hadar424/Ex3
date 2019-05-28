@@ -3,43 +3,63 @@
     ViewBag.Title = "display";
 }
 
-<h2>display</h2>
+    <html>
+    <head>
+        <link href="~/Content/IndexSheet.css" rel="stylesheet" type="text/css" />
 
+    </head>
 
-<script>
-    var IntervalTime = @Session["time"] * 1000
-    myTimer = (function () {
-        $.post( "@Url.Action("GetInfo")").done(function (xml) {
-                var xmlDoc = $.parseXML( xml ),
-                $xml = $( xmlDoc ),
-                lon = $xml.find( "Lon" ).text();
-                lan = $xml.find( "Lat" ).text();
-               
+    <body>
+        <canvas id="myCanvas" style="width:100%; height:100%;"> </canvas>
 
-                $("#lonValue").text(lon);
-                $("#lanValue").text(lan);
+        <script>
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+      
+        var oldLon = -1;
+        var oldLat= -1;
 
+        var IntervalTime = @Session["time"] * 1000
+        myTimer = (function () {
+        $.post( "@Url.Action("GetLonLat")").done(function (xml) {
+            var xmlDoc = $.parseXML(xml),
+                $xml = $(xmlDoc);
+            
+            lon = $xml.find("Lon").text();
+            lat = $xml.find("Lat").text();
+            lon =  parseFloat(lon);
+            lat = parseFloat(lat);
+            var newLon = (lon + 180) * (c.width / 360);
+            var newLat = (lat + 90) * (c.height / 180);
+            if (oldLon == -1 && oldLat == -1) {
+                ctx.beginPath();
+                ctx.arc(newLon, newLat, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = 'red';
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+                oldLon = newLon;
+                oldLat = newLat;
+            } else {
+                ctx.moveTo(oldLon, oldLat);
+                ctx.lineTo(newLon, newLat);
+                ctx.strokeStyle = 'red';
+                ctx.stroke();
+                oldLon = newLon;
+                oldLat = newLat;
+            }
+
+            });
         });
-    });
 
-    setInterval(myTimer, IntervalTime);
-    myTimer();
+             
 
-    $("#btnSearch").click(function () {
-        var input = {
-            name: $("#NameID").val(),
-        };
-        $.post("@Url.Action("Search", "First")", input).done(function (data) {
-            var xmlDoc = $.parseXML(data),
-                $xml = $(xmlDoc),
-                FirstName = $xml.find("FirstName").text();
-            LastName = $xml.find("LastName").text();
-            Salary = $xml.find("Salary").text();
+        setInterval(myTimer, IntervalTime);
+        myTimer();
 
-            $("#lstProducts").append("<li>" + FirstName + " " + LastName + " : $" + Salary + "</li>");
-        });
-    });
+        </script>
 
-</script>
-
-
+    </body>
+    </html>

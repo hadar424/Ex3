@@ -15,8 +15,33 @@ namespace Ex3.Controllers
         // GET: First
         public ActionResult Index()
         {
+            ViewBag.ip = "127.0.0.1";
+            ViewBag.port = "5402";
+            CommandChannel.Instance.ServerIP = "127.0.0.1";
+            CommandChannel.Instance.CommandPort = 5402;
+            Debug.WriteLine("start");
+            CommandChannel.Instance.Start();
+            string data = CommandChannel.Instance.GetInfo();
+            Debug.WriteLine("data !!!!!!!!! " + data);
+            float lon = getData(data, 0);
+            float lat = getData(data, 1);
+            Debug.WriteLine("lon !!!!!!!!! " + lon.ToString());
+            Debug.WriteLine("lat !!!!!!!!! " + lat.ToString());
+
+            ViewBag.lon = lon;
+            ViewBag.lat = lat;
 
             return View();
+        }
+
+        public float getData(string line, int index)
+        {
+            Debug.WriteLine("getData");
+            string parseString = "";
+            string[] values = line.Split(' ');
+            parseString = values[index];
+            Debug.WriteLine("parseString " + parseString);
+            return float.Parse(parseString);
         }
 
         public ActionResult display(string ip, int port, int time)

@@ -21,9 +21,9 @@ namespace Ex3.Models
         private NetworkStream stream;
         private Socket client;
         private StreamReader reader;
-        private Thread commandThread;
+        //private Thread commandThread;
         private string getLon = "get /position/longitude-deg";
-        private string getLan = "get /position/latitude-deg";
+        private string getLat = "get /position/latitude-deg";
         private string getThrottle = "get /controls/engines/current-engine/throttle";
         private string getRudder = "get /controls/flight/rudder";
             
@@ -66,8 +66,8 @@ namespace Ex3.Models
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // create new thread
-            commandThread = new Thread(() =>
-            {
+           // commandThread = new Thread(() =>
+          //  {
                 while (!client.Connected)
                 {
                     try
@@ -75,16 +75,15 @@ namespace Ex3.Models
                         // try to connect to the simulator as client
                         client.Connect(ep);
                         Debug.WriteLine("connected");
-                        stream = new NetworkStream(client);
-                        GetInfo();
+                        
                     }
                     catch (SocketException)
                     {
                     }
 
                 }
-            });
-            commandThread.Start();
+            /*});
+            commandThread.Start();*/
         }
 
         public double HandleInfo(string info)
@@ -98,14 +97,16 @@ namespace Ex3.Models
         public string GetInfo()
         {
             string lon = "";
-            string lan = "";
+            string lat = "";
             string throttle = "";
             string rudder = "";
-            reader = new StreamReader(stream);
-            while (client.Connected)
+            if (client.Connected)
             {
+                stream = new NetworkStream(client);
+                reader = new StreamReader(stream);
+          
                 Byte[] bufferLon = Encoding.ASCII.GetBytes(getLon + "\r\n");
-                Byte[] bufferLan = Encoding.ASCII.GetBytes(getLan + "\r\n");
+                Byte[] bufferLat = Encoding.ASCII.GetBytes(getLat + "\r\n");
                 Byte[] bufferThrottle = Encoding.ASCII.GetBytes(getThrottle + "\r\n");
                 Byte[] bufferRudder = Encoding.ASCII.GetBytes(getRudder + "\r\n");
 
@@ -115,9 +116,9 @@ namespace Ex3.Models
                 lon = reader.ReadLine();
              
                 // send the massage to the simulator 
-                stream.Write(bufferLan, 0, bufferLan.Length);
-                // get lan
-                lan = reader.ReadLine();
+                stream.Write(bufferLat, 0, bufferLat.Length);
+                // get lat
+                lat = reader.ReadLine();
 
                 // send the massage to the simulator 
                 stream.Write(bufferThrottle, 0, bufferThrottle.Length);
@@ -129,7 +130,8 @@ namespace Ex3.Models
                 // get rudder
                 rudder = reader.ReadLine();
 
-                string data = lon + " " + lan + " " + throttle + " " + rudder;
+                string data = HandleInfo(lon).ToString() + " " + HandleInfo(lat).ToString() + " " +
+                     HandleInfo(throttle).ToString() + " " + HandleInfo(rudder).ToString();
                 Debug.WriteLine(data);
 
                 return data;

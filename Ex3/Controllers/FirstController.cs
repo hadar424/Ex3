@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -16,6 +17,7 @@ namespace Ex3.Controllers
             ViewBag.port = "5402";
             CommandChannel.Instance.ServerIP = "127.0.0.1";
             CommandChannel.Instance.CommandPort = 5402;
+            Debug.WriteLine("start");
             CommandChannel.Instance.Start();
 
             return View();

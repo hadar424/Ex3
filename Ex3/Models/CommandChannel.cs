@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
 
 namespace Ex3.Models
 {
@@ -18,10 +18,8 @@ namespace Ex3.Models
         private string ip;
         private NetworkStream stream;
         private Socket client;
-        private TcpListener listener;
         private StreamReader reader;
-        private volatile bool closeThread = false;
-        private Thread infoThread;
+        private Thread commandThread;
         private string getLon = "get /position/longitude-deg";
         private string getLan = "get /position/latitude-deg";
 
@@ -56,64 +54,29 @@ namespace Ex3.Models
         public void Start()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-            listener = new TcpListener(ep);
-
-            listener.Start();
-            // create new thread for the information channel
-            infoThread = new Thread(() =>
+            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            // create new thread
+            commandThread = new Thread(() =>
             {
-                while (!closeThread)
+                while (!client.Connected)
                 {
                     try
                     {
-                        client = listener.AcceptSocket();
-                        while (!client.Connected)
-                        {
-                            try
-                            {
-                                // try to connect to the simulator as client
-                                client.Connect(ep);
-                                getInfo(getLon);
-                                getInfo(getLan);
-                            }
-                            catch (SocketException)
-                            {
-                            }
-
-                        }
-
+                        // try to connect to the simulator as client
+                        client.Connect(ep);
+                        Debug.WriteLine("connected");
+                        stream = new NetworkStream(client);
+                        GetInfo();
                     }
                     catch (SocketException)
                     {
-                        break;
                     }
+
                 }
-                listener.Stop();
             });
-            infoThread.Start();
-
-
+            commandThread.Start();
         }
 
-        public void ReadInfo()
-        {
-            string info = "";
-            if (client.Connected)
-            {
-                stream = new NetworkStream(client);
-                reader = new StreamReader(stream);
-                while (!closeThread)
-                {
-                    // read one line
-                    info = reader.ReadLine();
-                    //HandleInfo(info);
-                    System.Console.WriteLine(info);
-                    // initialize info buffer
-                    info = "";
-
-                }
-            }
-        }
         public void HandleInfo(string info)
         {
             if (info != null)
@@ -135,17 +98,33 @@ namespace Ex3.Models
             }
         }
 
-        public void getInfo(string command)
+        public void GetInfo()
         {
-            if (string.IsNullOrEmpty(command))
+            string info = "";
+            reader = new StreamReader(stream);
+            while (client.Connected)
             {
-                return;
-            }
-            Byte[] buffer = Encoding.ASCII.GetBytes(command + "\r\n");
-            // send the massage to the simulator
-            stream.Write(buffer, 0, buffer.Length);
+                Byte[] bufferLon = Encoding.ASCII.GetBytes(getLon + "\r\n");
+                Byte[] bufferLan = Encoding.ASCII.GetBytes(getLan + "\r\n");
 
-            ReadInfo();
+                // send the massage to the simulator 
+                stream.Write(bufferLon, 0, bufferLon.Length);
+                // get lon
+                info = reader.ReadLine();
+                Debug.WriteLine(info);
+                // initialize info buffer
+                info = "";
+
+                // send the massage to the simulator 
+                stream.Write(bufferLan, 0, bufferLan.Length);
+                // get lan
+                info = reader.ReadLine();
+                //HandleInfo(info);
+                Debug.WriteLine(info);
+                // initialize info buffer
+                info = "";
+
+            }
         }
 
 

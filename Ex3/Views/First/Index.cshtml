@@ -18,16 +18,18 @@
         var ctx = c.getContext("2d");
         ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
-        ctx.beginPath();
-        var lon = @ViewBag.lon;
-        var lat = @ViewBag.lat;
+        lon =  parseFloat(@ViewBag.lon);
+        lat = parseFloat(@ViewBag.lat);
         var newLon = (lon + 180) * (c.height / 360);
         var newLat = (lat + 90) * (c.height / 180);
-        ctx.arc(newLon, newLat, 5, 0, 2 * Math.PI);
-        ctx.strokeStyle = 'black';
+
+        ctx.beginPath();
+        ctx.arc(newLon, newLat, 3, 0, 2 * Math.PI);
         ctx.fillStyle = 'red';
         ctx.fill();
+        ctx.strokeStyle = 'red';
         ctx.stroke();
+        ctx.closePath();
         </script>
 
     </body>

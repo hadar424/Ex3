@@ -18,6 +18,12 @@ namespace Ex3.Controllers
 
         }
 
+        public ActionResult save()
+        {
+            return View();
+
+        }
+
         // GET: First
         public ActionResult Map(string ip, int port)
         {

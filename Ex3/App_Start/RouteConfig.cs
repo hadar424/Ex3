@@ -24,6 +24,13 @@ namespace Ex3
                 defaults: new { controller = "First", action = "Map" }
             );
 
+            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.MapRoute(
+                name: "save",
+                url: "save/{ip}/{port}}/{time}/{saveTime}/{file}",
+                defaults: new { controller = "First", action = "save" }
+            );
+
             routes.MapRoute(
               name: "Default",
               url: "{action}/{id}",

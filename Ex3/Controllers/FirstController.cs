@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -31,21 +32,35 @@ namespace Ex3.Controllers
             CommandChannel.Instance.Time = time;
             CommandChannel.Instance.Start();
 
-
             string data = CommandChannel.Instance.GetInfo();
-            Debug.WriteLine("before getData");
             float lon = getData(data, 0);
             float lat = getData(data, 1);
-            Debug.WriteLine("after getData");
+            float throttle = getData(data, 2);
+            float rudder = getData(data, 3);
+            saveToFile(file, lon, lat, throttle, rudder);
 
             ViewBag.lon = lon;
             ViewBag.lat = lat;
+            ViewBag.throttle = throttle;
+            ViewBag.rudder = rudder;
 
             // read from file
             Session["time"] = time;
+            Session["saveTime"] = saveTime;
 
             return View();
 
+        }
+
+        public void saveToFile(string file, float lon, float lat, float throttle, float rudder)
+        {
+           string fileName = file + ".txt";
+           StreamWriter fileStream = new StreamWriter(fileName);
+           fileStream.WriteLine(lon.ToString());
+           fileStream.WriteLine(lat.ToString());
+           fileStream.WriteLine(throttle.ToString());
+           fileStream.WriteLine(rudder.ToString());
+           fileStream.Close();
         }
 
         // GET: First
@@ -121,6 +136,8 @@ namespace Ex3.Controllers
             Random rnd = new Random();
             float lon = getData(data, 0) + rnd.Next(50);
             float lat = getData(data, 1) + rnd.Next(50);
+            float throttle = getData(data, 2);
+            float rudder = getData(data, 3);
 
             writer.WriteStartDocument();
             writer.WriteStartElement("Sampling");

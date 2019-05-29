@@ -21,7 +21,7 @@
         var oldLon = -1;
         var oldLat= -1;
 
-        var IntervalTime = @Session["time"] * 1000
+        var IntervalTime = 1000 / @Session["time"]
         myTimer = (function () {
         $.post( "@Url.Action("GetLonLat")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
@@ -46,6 +46,7 @@
                 ctx.moveTo(oldLon, oldLat);
                 ctx.lineTo(newLon, newLat);
                 ctx.strokeStyle = 'red';
+                ctx.width = 3;
                 ctx.stroke();
                 oldLon = newLon;
                 oldLat = newLat;

@@ -12,7 +12,8 @@ namespace Ex3.Controllers
 {
     public class FirstController : Controller
     {
-        public ActionResult Index()
+        
+        public ActionResult Default()
         {
             return View();
 
@@ -48,7 +49,7 @@ namespace Ex3.Controllers
         }
 
         // GET: First
-        public ActionResult Map(string ip, int port)
+        public ActionResult Index(string ip, int port)
         {
             ViewBag.ip = ip;
             ViewBag.port = port;
@@ -73,7 +74,7 @@ namespace Ex3.Controllers
             return float.Parse(parseString);
         }
 
-        public ActionResult display(string ip, int port, int time)
+        public ActionResult Display(string ip, int port, int time)
         {
             ViewBag.ip = ip;
             ViewBag.port = port;

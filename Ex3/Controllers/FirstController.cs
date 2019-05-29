@@ -90,17 +90,13 @@ namespace Ex3.Controllers
             float rudder = getData(data, 3);
 
 
-            string fName = FirstController.Instance.FileName + ".txt";
-            Debug.WriteLine("fileName " + fName);
-            string fileName = @"C:\\" + fName;
-            //StreamWriter fileStream = new StreamWriter(fName);
-            StreamWriter sw = File.CreateText(fileName);
-
-                fileStream.WriteLine(lon.ToString());
-            fileStream.WriteLine(lat.ToString());
-            fileStream.WriteLine(throttle.ToString());
-            fileStream.WriteLine(rudder.ToString());
-            fileStream.Close();
+            string fName = FirstController.Instance.FileName;
+            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + fName + ".txt";
+            using (StreamWriter streamWriter = System.IO.File.AppendText(filePath))
+            {
+                streamWriter.WriteLine(lon.ToString() + ',' + lat.ToString() + ',' + throttle.ToString() +
+                    ',' + rudder.ToString());
+            }
 
             return ToXml(data);
 

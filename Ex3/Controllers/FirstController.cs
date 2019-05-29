@@ -18,8 +18,31 @@ namespace Ex3.Controllers
 
         }
 
-        public ActionResult save()
+        public ActionResult Save(string ip, int port, int time, int saveTime, string file)
         {
+            ViewBag.ip = ip;
+            ViewBag.port = port;
+            ViewBag.time = time;
+            ViewBag.saveTime = saveTime;
+            ViewBag.file = file;
+            CommandChannel.Instance.ServerIP = ip;
+            CommandChannel.Instance.CommandPort = port;
+            CommandChannel.Instance.Time = time;
+            CommandChannel.Instance.Start();
+
+
+            string data = CommandChannel.Instance.GetInfo();
+            Debug.WriteLine("before getData");
+            float lon = getData(data, 0);
+            float lat = getData(data, 1);
+            Debug.WriteLine("after getData");
+
+            ViewBag.lon = lon;
+            ViewBag.lat = lat;
+
+            // read from file
+            Session["time"] = time;
+
             return View();
 
         }

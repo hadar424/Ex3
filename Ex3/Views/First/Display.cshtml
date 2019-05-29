@@ -3,7 +3,7 @@
     ViewBag.Title = "display";
 }
 
-    <html>
+    <html style="overflow-y:hidden">
     <head>
         <link href="~/Content/IndexSheet.css" rel="stylesheet" type="text/css" />
 
@@ -17,7 +17,7 @@
         var ctx = c.getContext("2d");
         ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
-      
+
         var oldLon = -1;
         var oldLat= -1;
 
@@ -26,7 +26,7 @@
         $.post( "@Url.Action("GetLonLat")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc);
-            
+
             lon = $xml.find("Lon").text();
             lat = $xml.find("Lat").text();
             lon =  parseFloat(lon);
@@ -55,7 +55,7 @@
             });
         });
 
-             
+
 
         setInterval(myTimer, IntervalTime);
         myTimer();

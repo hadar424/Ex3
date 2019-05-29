@@ -13,7 +13,29 @@ namespace Ex3.Controllers
 {
     public class FirstController : Controller
     {
-        
+        #region Singleton
+        private static FirstController m_Instance = null;
+        public static FirstController Instance
+        {
+            get
+            {
+                if (m_Instance == null)
+                {
+                    m_Instance = new FirstController();
+                }
+                return m_Instance;
+            }
+        }
+        #endregion
+
+        private string fileName;
+        public string FileName
+        {
+            get { return fileName; }
+            set { fileName = value; }
+        }
+
+
         public ActionResult Default()
         {
             return View();
@@ -22,11 +44,17 @@ namespace Ex3.Controllers
 
         public ActionResult Save(string ip, int port, int time, int saveTime, string file)
         {
+            Debug.WriteLine("save");
+            Debug.WriteLine(file);
+            
             ViewBag.ip = ip;
             ViewBag.port = port;
             ViewBag.time = time;
             ViewBag.saveTime = saveTime;
             ViewBag.file = file;
+            FirstController.Instance.FileName = file;
+            Debug.WriteLine("!!!!!!!!!!" + FileName);
+
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
             CommandChannel.Instance.Time = time;
@@ -37,7 +65,6 @@ namespace Ex3.Controllers
             float lat = getData(data, 1);
             float throttle = getData(data, 2);
             float rudder = getData(data, 3);
-            saveToFile(file, lon, lat, throttle, rudder);
 
             ViewBag.lon = lon;
             ViewBag.lat = lat;
@@ -52,15 +79,32 @@ namespace Ex3.Controllers
 
         }
 
-        public void saveToFile(string file, float lon, float lat, float throttle, float rudder)
+        public string saveToFile()
         {
-           string fileName = file + ".txt";
-           StreamWriter fileStream = new StreamWriter(fileName);
-           fileStream.WriteLine(lon.ToString());
-           fileStream.WriteLine(lat.ToString());
-           fileStream.WriteLine(throttle.ToString());
-           fileStream.WriteLine(rudder.ToString());
-           fileStream.Close();
+            Debug.WriteLine("saveToFile");
+            string data = CommandChannel.Instance.GetInfo();
+            Random rnd = new Random();
+            float lon = getData(data, 0) + rnd.Next(50);
+            float lat = getData(data, 1) + rnd.Next(50);
+            float throttle = getData(data, 2);
+            float rudder = getData(data, 3);
+
+
+            string fName = FirstController.Instance.FileName + ".txt";
+            Debug.WriteLine("fileName " + fName);
+            string fileName = @"C:\\" + fName;
+            //StreamWriter fileStream = new StreamWriter(fName);
+            StreamWriter sw = File.CreateText(fileName);
+
+                fileStream.WriteLine(lon.ToString());
+            fileStream.WriteLine(lat.ToString());
+            fileStream.WriteLine(throttle.ToString());
+            fileStream.WriteLine(rudder.ToString());
+            fileStream.Close();
+
+            return ToXml(data);
+
+            
         }
 
         // GET: First
@@ -143,6 +187,8 @@ namespace Ex3.Controllers
             writer.WriteStartElement("Sampling");
             writer.WriteElementString("Lon", lon.ToString());
             writer.WriteElementString("Lat", lat.ToString());
+            writer.WriteElementString("Throttle", throttle.ToString());
+            writer.WriteElementString("Rudder", rudder.ToString());
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Flush();

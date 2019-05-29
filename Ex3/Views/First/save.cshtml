@@ -23,7 +23,7 @@
 
         var IntervalTime = @Session["time"] * 1000
         myTimer = (function () {
-        $.post( "@Url.Action("GetLonLat")").done(function (xml) {
+        $.post( "@Url.Action("saveToFile")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc);
 

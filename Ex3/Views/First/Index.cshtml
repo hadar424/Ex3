@@ -3,21 +3,28 @@
     ViewBag.Title = "Index";
 }
 
-    <html style="overflow-y:hidden">
-    <head>
-        <link href="~/Content/IndexSheet.css" rel="stylesheet" type="text/css" />
+    <html style="overflow:hidden">
 
-    </head>
 
-    <body>
-        <canvas id="myCanvas" style="width:100%; height:100%;"> </canvas>
+    <body style="margin:0">
+
+        <canvas id="myCanvas" style="width:100%; height:100%;position:absolute;background-size:100% 100%; margin:0; background-image:url('/export-map-share.png')"></canvas>
 
         <script>
-        var c = document.getElementById("myCanvas");
+        /*
+        <head>
+    <link href="~/Content/IndexSheet.css" rel="stylesheet" type="text/css" />
 
+</head>*/
+
+        var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
-        ctx.canvas.width = window.innerWidth;
-        ctx.canvas.height = window.innerHeight;
+
+        c.width = window.innerWidth;
+        c.height = window.outerHeight;
+        ctx.canvas.width = c.width;
+        ctx.canvas.height =c.height;
+
         lon =  parseFloat(@ViewBag.lon);
         lat = parseFloat(@ViewBag.lat);
         var newLon = (lon + 180) * (c.height / 360);

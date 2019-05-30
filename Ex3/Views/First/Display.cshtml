@@ -3,20 +3,29 @@
     ViewBag.Title = "display";
 }
 
-    <html style="overflow-y:hidden">
-    <head>
-        <link href="~/Content/IndexSheet.css" rel="stylesheet" type="text/css" />
+    <html style="overflow:hidden">
 
-    </head>
 
-    <body>
-        <canvas id="myCanvas" style="width:100%; height:100%;"> </canvas>
+    <body style="margin:0">
+
+        <canvas id="myCanvas" style="width:100%; height:100%;position:absolute;background-size:100% 100%; margin:0; background-image:url('/export-map-share.png')"></canvas>
 
         <script>
+        /*
+        <head>
+    <link href="~/Content/IndexSheet.css" rel="stylesheet" type="text/css" />
+
+</head>*/
+
+
+
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
-        ctx.canvas.width = window.innerWidth;
-        ctx.canvas.height = window.innerHeight;
+            
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            ctx.width = window.innerWidth;
+            ctx.height = window.innerHeight;
 
         var oldLon = -1;
         var oldLat= -1;
@@ -32,7 +41,7 @@
             lon =  parseFloat(lon);
             lat = parseFloat(lat);
             var newLon = (lon + 180) * (c.width / 360);
-            var newLat = (lat + 90) * (c.height / 180);
+            var newLat = (lat - 90) * (c.height / -180);
             if (oldLon == -1 && oldLat == -1) {
                 ctx.beginPath();
                 ctx.arc(newLon, newLat, 3, 0, 2 * Math.PI);

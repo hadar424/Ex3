@@ -29,19 +29,14 @@
 
         var oldLon = -1;
         var oldLat= -1;
-                    alert("1");
 
         var IntervalTime = 1000 / @Session["time"]
         myTimer = (function () {
         $.post( "@Url.Action("GetLonLatFile")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc);
-            alert("in");
             lon = $xml.find("Lon").text();
             lat = $xml.find("Lat").text();
-          alert(lon);
-
-          alert(lat);
 
             lon =  parseFloat(lon);
             lat = parseFloat(lat);

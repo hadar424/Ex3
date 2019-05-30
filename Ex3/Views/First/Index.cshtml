@@ -11,19 +11,19 @@
         <canvas id="myCanvas" style="width:100%; height:100%;position:absolute;background-size:100% 100%; margin:0; background-image:url('/export-map-share.png')"></canvas>
 
         <script>
-        /*
-        <head>
-    <link href="~/Content/IndexSheet.css" rel="stylesheet" type="text/css" />
 
-</head>*/
+            window.onbeforeunload = function () {
+                $.post("@Url.Action("CloseServer")");
+            }
+          
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
 
         c.width = window.innerWidth;
         c.height = window.outerHeight;
-        ctx.canvas.width = c.width;
-        ctx.canvas.height =c.height;
+        ctx.width = window.innerWidth;
+        ctx.height = window.outerHeight;
 
         lon =  parseFloat(@ViewBag.lon);
         lat = parseFloat(@ViewBag.lat);

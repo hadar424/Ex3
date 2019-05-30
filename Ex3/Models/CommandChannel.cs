@@ -19,7 +19,8 @@ namespace Ex3.Models
         private string ip;
         private int time;
         private NetworkStream stream;
-        private Socket client;
+        //private Socket client;
+        private TcpClient client;
         private StreamReader reader;
         //private Thread commandThread;
         private string getLon = "get /position/longitude-deg";
@@ -64,26 +65,22 @@ namespace Ex3.Models
         public void Start()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            // create new thread
-           // commandThread = new Thread(() =>
-          //  {
-                while (!client.Connected)
+            client = new TcpClient();
+            //client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            while (!client.Connected)
+            {
+                try
                 {
-                    try
-                    {
-                        // try to connect to the simulator as client
-                        client.Connect(ep);
-                        Debug.WriteLine("connected");
+                    // try to connect to the simulator as client
+                    client.Connect(ep);
+                    Debug.WriteLine("connected");
                         
-                    }
-                    catch (SocketException)
-                    {
-                    }
-
                 }
-            /*});
-            commandThread.Start();*/
+                catch (SocketException)
+                {
+                }
+
+            }
         }
 
         public double HandleInfo(string info)
@@ -102,7 +99,7 @@ namespace Ex3.Models
             string rudder = "";
             if (client.Connected)
             {
-                stream = new NetworkStream(client);
+                stream =client.GetStream();
                 reader = new StreamReader(stream);
           
                 Byte[] bufferLon = Encoding.ASCII.GetBytes(getLon + "\r\n");
@@ -138,19 +135,18 @@ namespace Ex3.Models
             return "";
         }
 
-        private void ToXml(Double info)
+        public void Disconnect()
         {
-            //Initiate XML stuff
-            StringBuilder sb = new StringBuilder();
-            XmlWriterSettings settings = new XmlWriterSettings();
-            XmlWriter writer = XmlWriter.Create(sb, settings);
+            Debug.WriteLine("Command channel disconnect");
+            if (client.Connected)
+            {
+                IAsyncResult result = client.BeginConnect(ip, port, null, null);
 
-            writer.WriteStartDocument();
-            writer.WriteStartElement("Lon");
-            writer.WriteString(info.ToString());
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Flush();
+                // close socket
+                client.EndConnect(result);
+                client.Close();
+            }
+
         }
 
 

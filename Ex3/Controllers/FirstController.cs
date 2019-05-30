@@ -150,7 +150,6 @@ namespace Ex3.Controllers
 
         public float getData(string line, int index)
         {
-
             string parseString = "";
             string[] values = line.Split(' ');
             parseString = values[index];
@@ -191,10 +190,14 @@ namespace Ex3.Controllers
         {
             Debug.WriteLine("GetLonLatFile");
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + FirstController.Instance.FileName + ".txt";
-
+            string data = "";
             string[] lines = System.IO.File.ReadAllLines(filePath);
-            string data = lines[FirstController.Instance.ArrayIndex];
-            FirstController.Instance.ArrayIndex += 1;
+            if (FirstController.Instance.ArrayIndex < lines.Length)
+            {
+                data = lines[FirstController.Instance.ArrayIndex];
+                FirstController.Instance.ArrayIndex += 1;
+
+            }
             return ToXml(data);
         }
 
@@ -208,6 +211,15 @@ namespace Ex3.Controllers
             return ToXml(data);
         }
 
+        [HttpPost]
+        public void CloseServer()
+        {
+
+
+            Debug.WriteLine("closeServer");
+            CommandChannel.Instance.Disconnect();
+        }
+
         private string ToXml(string data)
         {
             Debug.WriteLine("ToXml");
@@ -217,7 +229,10 @@ namespace Ex3.Controllers
             XmlWriterSettings settings = new XmlWriterSettings();
             XmlWriter writer = XmlWriter.Create(sb, settings);
             // parse data string
-
+            if (data == "")
+            {
+                return data;
+            }
             float lon = getData(data, 0);
             float lat = getData(data, 1);
             float throttle = getData(data, 2);

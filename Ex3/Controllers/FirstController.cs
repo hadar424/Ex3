@@ -35,6 +35,13 @@ namespace Ex3.Controllers
             set { fileName = value; }
         }
 
+        private int arrayIndex;
+        public int ArrayIndex
+        {
+            get { return arrayIndex; }
+            set { arrayIndex = value; }
+        }
+
 
         public ActionResult Default()
         {
@@ -94,8 +101,8 @@ namespace Ex3.Controllers
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + fName + ".txt";
             using (StreamWriter streamWriter = System.IO.File.AppendText(filePath))
             {
-                streamWriter.WriteLine(lon.ToString() + ',' + lat.ToString() + ',' + throttle.ToString() +
-                    ',' + rudder.ToString());
+                streamWriter.WriteLine(lon.ToString() + ' ' + lat.ToString() + ' ' + throttle.ToString() +
+                    ' ' + rudder.ToString());
             }
 
             return ToXml(data);
@@ -105,16 +112,27 @@ namespace Ex3.Controllers
 
         public ActionResult Load(string file, int time)
         {
+            FirstController.Instance.FileName = file;
+            FirstController.Instance.ArrayIndex = 0;
+            Session["time"] = time;
 
-            float lon = getData(data, 0);
-            float lat = getData(data, 1);
+            Debug.WriteLine("doneLoad");
 
-            return View();
+            return View("Load");
         }
 
         // GET: First
         public ActionResult Index(string ip, int port)
         {
+            Debug.WriteLine("Index");
+
+            if (ip.IndexOf(".") == -1)
+            {
+                Debug.Write("in if");
+                return Load(ip, port);
+
+            }
+
             ViewBag.ip = ip;
             ViewBag.port = port;
             CommandChannel.Instance.ServerIP = ip;
@@ -132,14 +150,19 @@ namespace Ex3.Controllers
 
         public float getData(string line, int index)
         {
+
             string parseString = "";
             string[] values = line.Split(' ');
             parseString = values[index];
+            Debug.WriteLine(parseString);
+
             return float.Parse(parseString);
         }
 
         public ActionResult Display(string ip, int port, int time)
         {
+            Debug.WriteLine("Display");
+
             ViewBag.ip = ip;
             ViewBag.port = port;
             CommandChannel.Instance.ServerIP = ip;
@@ -156,11 +179,23 @@ namespace Ex3.Controllers
 
             ViewBag.lon = lon;
             ViewBag.lat = lat;
+            ViewBag.lat = lat;
 
             // read from file
             Session["time"] = time;
 
             return View();
+        }
+
+        public string GetLonLatFile()
+        {
+            Debug.WriteLine("GetLonLatFile");
+            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + FirstController.Instance.FileName + ".txt";
+
+            string[] lines = System.IO.File.ReadAllLines(filePath);
+            string data = lines[FirstController.Instance.ArrayIndex];
+            FirstController.Instance.ArrayIndex += 1;
+            return ToXml(data);
         }
 
         [HttpPost]

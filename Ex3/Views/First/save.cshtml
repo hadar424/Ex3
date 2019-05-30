@@ -3,14 +3,34 @@
     ViewBag.Title = "Save";
 }
 
-<html style="overflow:hidden">
+    <html>
+    <head>
+        <style>
+            body {
+                background-image: url('/export-map-share.png');
+                background-size: 100% 100%;
+                margin: 0;
+                background-position: center center;
+                background-attachment: fixed;
+                background-repeat: no-repeat;
+            }
 
+            canvas {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: block
+            }
+        </style>
+    </head>
 
-<body style="margin:0">
-    
-    <canvas id="myCanvas" style="width:100%; height:100%;position:absolute;background-size:100% 100%; margin:0; background-image:url('/export-map-share.png')"></canvas>
+    <body style="margin:0">
 
-    <script>
+        <canvas id="myCanvas"></canvas>
+        <script>
+
 
          window.onbeforeunload = function () {
                 $.post("@Url.Action("CloseServer")");
@@ -19,14 +39,12 @@
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
 
-         c.width = window.innerWidth;
+       c.width = window.innerWidth;
         c.height = window.outerHeight;
-        ctx.width = window.innerWidth;
-        ctx.height = window.outerHeight;
-        
 
-        var oldLon = 200;
-        var oldLat = 200;
+            var firstTime = 0;
+        var oldLon;
+        var oldLat;
 
         var IntervalTime = 1000 / @Session["time"]
         myTimer = (function () {
@@ -42,9 +60,9 @@
             var newLon = (lon + 180) * (c.width / 360);
             var newLat = (lat - 90) * (c.height / -180);
 
-            if (oldLon == 200 && oldLat == 200) {
+            if (firstTime == 0) {
                 ctx.beginPath();
-                ctx.arc(newLon, newLat, 2, 0, 2 * Math.PI);
+                ctx.arc(newLon, newLat, 4, 0, 2 * Math.PI);
                 ctx.fillStyle = 'red';
                 ctx.fill();
                 ctx.strokeStyle = 'red';
@@ -53,6 +71,7 @@
                 ctx.closePath();
                 oldLon = newLon;
                 oldLat = newLat;
+                firstTime = 1;
             } else {
                 ctx.moveTo(oldLon, oldLat);
                 ctx.lineTo(newLon, newLat);
@@ -70,8 +89,8 @@
         setTimeout(function () { clearInterval(interval) }, @Session["saveTime"] * 1000);
         myTimer();
 
-    </script>
+        </script>
 
-</body>
-</html>
+    </body>
+    </html>
 

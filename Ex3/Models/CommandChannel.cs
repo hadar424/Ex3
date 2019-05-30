@@ -140,10 +140,8 @@ namespace Ex3.Models
             Debug.WriteLine("Command channel disconnect");
             if (client.Connected)
             {
-                IAsyncResult result = client.BeginConnect(ip, port, null, null);
 
                 // close socket
-                client.EndConnect(result);
                 client.Close();
             }
 

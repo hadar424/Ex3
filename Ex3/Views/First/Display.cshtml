@@ -45,11 +45,11 @@
             var newLat = (lat - 90) * (c.height / -180);
             if (oldLon == -1 && oldLat == -1) {
                 ctx.beginPath();
-                ctx.arc(newLon, newLat, 3, 0, 2 * Math.PI);
+                ctx.arc(newLon, newLat, 2, 0, 2 * Math.PI);
                 ctx.fillStyle = 'red';
                 ctx.fill();
                 ctx.strokeStyle = 'red';
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.closePath();
                 oldLon = newLon;
@@ -58,7 +58,7 @@
                 ctx.moveTo(oldLon, oldLat);
                 ctx.lineTo(newLon, newLat);
                 ctx.strokeStyle = 'red';
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 2;
                 ctx.stroke();
                 oldLon = newLon;
                 oldLat = newLat;

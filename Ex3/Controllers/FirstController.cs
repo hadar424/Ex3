@@ -103,6 +103,15 @@ namespace Ex3.Controllers
             
         }
 
+        public ActionResult Load(string file, int time)
+        {
+
+            float lon = getData(data, 0);
+            float lat = getData(data, 1);
+
+            return View();
+        }
+
         // GET: First
         public ActionResult Index(string ip, int port)
         {

@@ -43,7 +43,7 @@
             lon =  parseFloat(lon);
             lat = parseFloat(lat);
             var newLon = (lon + 180) * (c.width / 360);
-            var newLat = (lat + 90) * (c.height / 180);
+            var newLat = (lat - 90) * (c.height / -180);
 
             if (oldLon == -1 && oldLat == -1) {
                 ctx.beginPath();

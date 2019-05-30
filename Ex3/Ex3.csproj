@@ -135,6 +135,7 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
     <Content Include="Views\First\Save.cshtml" />
     <Content Include="Views\First\Default.cshtml" />
+    <Content Include="Views\First\Load.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

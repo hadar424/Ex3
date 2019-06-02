@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -39,17 +40,28 @@ namespace Ex3.Controllers
             set { arrayIndex = value; }
         }
 
-
+        /*
+       * Name: Default
+       * Input: -
+       * Output: ActionResult view
+       * Operation: stage 0 - dafault, no parameters
+       */
         public ActionResult Default()
         {
             return View();
 
         }
 
+        /*
+         * Name: Save
+         * Input: string ip, int port, int time, int saveTime, string file
+         * Output: ActionResult view
+         * Operation: stage 3 - animation and save the data in txt file
+         */
         public ActionResult Save(string ip, int port, int time, int saveTime, string file)
         {
             // send the parameters to the model
-            FirstController.Instance.FileName = file;
+            Instance.FileName = file;
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
 
@@ -62,6 +74,12 @@ namespace Ex3.Controllers
             return View();
         }
 
+        /*
+      * Name: SaveToFile
+      * Input: -
+      * Output: string
+      * Operation: save the data in txt file and goto xml function - return the values to the view
+      */
         public string SaveToFile()
         {
             // get the data from the server
@@ -72,7 +90,7 @@ namespace Ex3.Controllers
             float rudder = getData(data, 3);
 
             // save the data in the file
-            string fName = FirstController.Instance.FileName;
+            string fName = Instance.FileName;
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + fName + ".txt";
             using (StreamWriter streamWriter = System.IO.File.AppendText(filePath))
             {
@@ -83,17 +101,28 @@ namespace Ex3.Controllers
             return ToXml(data);
         }
 
+            /*
+        * Name: Load
+        * Input: string file, int time
+        * Output: ActionResult view
+        * Operation: stage 4 - load the data from txt file and do the animation according to that
+        */
         public ActionResult Load(string file, int time)
         {
             // save the parameters for loading
-            FirstController.Instance.FileName = file;
-            FirstController.Instance.ArrayIndex = 0;
+            Instance.FileName = file;
+            Instance.ArrayIndex = 0;
             Session["time"] = time;
 
             return View("Load");
         }
 
-        // GET: First
+            /*
+        * Name: Index
+        * Input: string ip, int port
+        * Output: ActionResult view
+        * Operation: stage 1 - connect to server and draw the start point
+        */
         public ActionResult Index(string ip, int port)
         {
             // check if the string is IP or file name (if file name - goto Load function)
@@ -120,6 +149,13 @@ namespace Ex3.Controllers
             return View();
         }
 
+
+            /*
+        * Name: getData
+        * Input: string line, int index
+        * Output: float
+        * Operation: parse the data - get the value according to the index
+        */
         public float getData(string line, int index)
         {
             // get the data according to the index - split by ' '
@@ -130,11 +166,17 @@ namespace Ex3.Controllers
             // convert from string to float
             if (!float.TryParse(parseString, out value))
             {
-                throw new System.FormatException();
+                return 200;
             }
             return value;
         }
 
+        /*
+      * Name: Display
+      * Input: string ip, int port, int time
+      * Output: ActionResult view
+      * Operation: stage 2 - play the animation according to the simulator
+      */
         public ActionResult Display(string ip, int port, int time)
         {
             // save the parameters and send to the model
@@ -150,7 +192,12 @@ namespace Ex3.Controllers
             return View();
         }
 
-        [HttpPost]
+            /*
+      * Name: GetLonLat
+      * Input: -
+      * Output: string
+      * Operation: get the info from the simulator
+      */
         public string GetLonLat()
         {
             // send the parameters to the xml and send to the view
@@ -158,10 +205,16 @@ namespace Ex3.Controllers
             return ToXml(data);
         }
 
+        /*
+       * Name: GetLonLatFile
+       * Input: -
+       * Output: string
+       * Operation: get the info from the file
+       */
         public string GetLonLatFile()
         {
             // get the lon and lat values from the file
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + FirstController.Instance.FileName + ".txt";
+            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + Instance.FileName + ".txt";
             string data = "";
             // check if file exists
             if (!System.IO.File.Exists(filePath)) { 
@@ -169,22 +222,34 @@ namespace Ex3.Controllers
              }
             // read all the lines from the file and split them
             string[] lines = System.IO.File.ReadAllLines(filePath);
-            if (FirstController.Instance.ArrayIndex < lines.Length)
+            if (Instance.ArrayIndex < lines.Length)
             {
                 // get the data from index row on the file
                 data = lines[FirstController.Instance.ArrayIndex];
-                FirstController.Instance.ArrayIndex += 1;
+                Instance.ArrayIndex += 1;
             }
             return ToXml(data);
         }
 
-        [HttpPost]
+        /*
+      * Name: CloseServer
+      * Input: -
+      * Output: -
+      * Operation: disconnect from the server
+      */
         public void CloseServer()
         {
             // disconnect from the server
             CommandChannel.Instance.Disconnect();
         }
 
+
+        /*
+      * Name: ToXml
+      * Input: string data
+      * Output: string
+      * Operation: save the data in the xml (for using in the view)
+      */
         private string ToXml(string data)
         {
             // Initiate XML stuff

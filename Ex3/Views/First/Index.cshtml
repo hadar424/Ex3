@@ -38,6 +38,10 @@
         
         lon =  parseFloat(@ViewBag.lon);
         lat = parseFloat(@ViewBag.lat);
+        if (lon == 200 || lat == 200) {
+                alert("wrong values");
+                clearInterval(interval)
+        }
         var newLon = (lon + 180) * (c.width / 360);
         var newLat = (lat - 90) * (c.height / -180);
 

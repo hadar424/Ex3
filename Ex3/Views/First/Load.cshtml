@@ -54,6 +54,11 @@
 
             lon =  parseFloat(lon);
             lat = parseFloat(lat);
+            if (lon == 200 || lat == 200) {
+                alert("wrong values");
+                clearInterval(interval)
+            }
+            
             var newLon = (lon + 180) * (c.width / 360);
             var newLat = (lat - 90) * (c.height / -180);
             if (firstTime == 0) {
@@ -65,8 +70,6 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.closePath();
-                oldLon = newLon;
-                oldLat = newLat;
                 firstTime = 1;
             } else {
                 ctx.moveTo(oldLon, oldLat);
@@ -74,10 +77,10 @@
                 ctx.strokeStyle = 'red';
                 ctx.lineWidth = 2;
                 ctx.stroke();
+            }
+                
                 oldLon = newLon;
                 oldLat = newLat;
-            }
-
             });
         });
 

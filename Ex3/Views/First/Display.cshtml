@@ -40,12 +40,11 @@
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
             
-         c.width = window.innerWidth;
+        c.width = window.innerWidth;
         c.height = window.outerHeight;
         
-
         var oldLon;
-         var oldLat;
+        var oldLat;
 
 
 
@@ -70,8 +69,6 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.closePath();
-                oldLon = newLon;
-                oldLat = newLat;
                 firstTime = 1;
             } else {
                 ctx.moveTo(oldLon, oldLat);
@@ -79,9 +76,9 @@
                 ctx.strokeStyle = 'red';
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                oldLon = newLon;
-                oldLat = newLat;
             }
+            oldLon = newLon;
+            oldLat = newLat;
 
             });
         });

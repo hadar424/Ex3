@@ -42,13 +42,13 @@
        c.width = window.innerWidth;
         c.height = window.outerHeight;
 
-            var firstTime = 0;
+        var firstTime = 0;
         var oldLon;
         var oldLat;
 
         var IntervalTime = 1000 / @Session["time"]
         myTimer = (function () {
-        $.post( "@Url.Action("saveToFile")").done(function (xml) {
+        $.post( "@Url.Action("SaveToFile")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc);
 
@@ -69,8 +69,6 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.closePath();
-                oldLon = newLon;
-                oldLat = newLat;
                 firstTime = 1;
             } else {
                 ctx.moveTo(oldLon, oldLat);
@@ -78,9 +76,10 @@
                 ctx.strokeStyle = 'red';
                 ctx.lineWidth = 2;
                 ctx.stroke();
+            }
+            
                 oldLon = newLon;
                 oldLat = newLat;
-            }
 
             });
         });

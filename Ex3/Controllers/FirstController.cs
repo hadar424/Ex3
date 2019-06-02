@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 using Ex3.Models;
@@ -51,51 +48,28 @@ namespace Ex3.Controllers
 
         public ActionResult Save(string ip, int port, int time, int saveTime, string file)
         {
-            Debug.WriteLine("save");
-            Debug.WriteLine(file);
-            
-            ViewBag.ip = ip;
-            ViewBag.port = port;
-            ViewBag.time = time;
-            ViewBag.saveTime = saveTime;
-            ViewBag.file = file;
+            // send the parameters to the model
             FirstController.Instance.FileName = file;
-            Debug.WriteLine("!!!!!!!!!!" + FileName);
-
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
-            CommandChannel.Instance.Time = time;
             CommandChannel.Instance.Start();
-
-            string data = CommandChannel.Instance.GetInfo();
-            float lon = getData(data, 0);
-            float lat = getData(data, 1);
-            float throttle = getData(data, 2);
-            float rudder = getData(data, 3);
-
-            ViewBag.lon = lon;
-            ViewBag.lat = lat;
-            ViewBag.throttle = throttle;
-            ViewBag.rudder = rudder;
-
             // read from file
             Session["time"] = time;
             Session["saveTime"] = saveTime;
 
             return View();
-
         }
 
-        public string saveToFile()
+        public string SaveToFile()
         {
-            Debug.WriteLine("saveToFile");
+            // get the data from the server
             string data = CommandChannel.Instance.GetInfo();
             float lon = getData(data, 0);
             float lat = getData(data, 1);
             float throttle = getData(data, 2);
             float rudder = getData(data, 3);
 
-
+            // save the data in the file
             string fName = FirstController.Instance.FileName;
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + fName + ".txt";
             using (StreamWriter streamWriter = System.IO.File.AppendText(filePath))
@@ -105,17 +79,14 @@ namespace Ex3.Controllers
             }
 
             return ToXml(data);
-
-            
         }
 
         public ActionResult Load(string file, int time)
         {
+            // save the parameters for loading
             FirstController.Instance.FileName = file;
             FirstController.Instance.ArrayIndex = 0;
             Session["time"] = time;
-
-            Debug.WriteLine("doneLoad");
 
             return View("Load");
         }
@@ -123,24 +94,24 @@ namespace Ex3.Controllers
         // GET: First
         public ActionResult Index(string ip, int port)
         {
-            Debug.WriteLine("Index");
-
-            if (ip.IndexOf(".") == -1)
+            // check if the string is IP or file name (if file name - goto Load function)
+            System.Net.IPAddress IP = null;
+            // check which kind of argument we received 
+            bool check = IPAddress.TryParse(ip, out IP);
+            if (check == false)
             {
-                Debug.Write("in if");
                 return Load(ip, port);
-
             }
 
-            ViewBag.ip = ip;
-            ViewBag.port = port;
+            // save the parameters and send to the model
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
             CommandChannel.Instance.Start();
+
+            // get the data from  the server and save in the view bag
             string data = CommandChannel.Instance.GetInfo();
             float lon = getData(data, 0);
             float lat = getData(data, 1);
-
             ViewBag.lon = lon;
             ViewBag.lat = lat;
 
@@ -149,92 +120,75 @@ namespace Ex3.Controllers
 
         public float getData(string line, int index)
         {
+            // get the data according to the index - split by ' '
             string parseString = "";
             string[] values = line.Split(' ');
             parseString = values[index];
-            Debug.WriteLine(parseString);
-
             return float.Parse(parseString);
         }
 
         public ActionResult Display(string ip, int port, int time)
         {
-            Debug.WriteLine("Display");
-
-            ViewBag.ip = ip;
-            ViewBag.port = port;
+            // save the parameters and send to the model
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
-            CommandChannel.Instance.Time = time;
             CommandChannel.Instance.Start();
 
-
-            string data = CommandChannel.Instance.GetInfo();
-            float lon = getData(data, 0);
-            float lat = getData(data, 1);
-
-            ViewBag.lon = lon;
-            ViewBag.lat = lat;
-            ViewBag.lat = lat;
-
-            // read from file
+            // sand the time to view
             Session["time"] = time;
 
             return View();
         }
 
-        public string GetLonLatFile()
-        {
-            Debug.WriteLine("GetLonLatFile");
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + FirstController.Instance.FileName + ".txt";
-            string data = "";
-            string[] lines = System.IO.File.ReadAllLines(filePath);
-            if (FirstController.Instance.ArrayIndex < lines.Length)
-            {
-                data = lines[FirstController.Instance.ArrayIndex];
-                FirstController.Instance.ArrayIndex += 1;
-
-            }
-            return ToXml(data);
-        }
-
         [HttpPost]
         public string GetLonLat()
         {
-            Debug.WriteLine("GetLonLat");
-             string data = CommandChannel.Instance.GetInfo();
-            
+            // send the parameters to the xml and send to the view
+            string data = CommandChannel.Instance.GetInfo();
+            return ToXml(data);
+        }
 
+        public string GetLonLatFile()
+        {
+            // get the lon and lat values from the file
+            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + FirstController.Instance.FileName + ".txt";
+            string data = "";
+            // read all the lines from the file and split them
+            string[] lines = System.IO.File.ReadAllLines(filePath);
+            if (FirstController.Instance.ArrayIndex < lines.Length)
+            {
+                // get the data from index row on the file
+                data = lines[FirstController.Instance.ArrayIndex];
+                FirstController.Instance.ArrayIndex += 1;
+            }
             return ToXml(data);
         }
 
         [HttpPost]
         public void CloseServer()
         {
-
-
-            Debug.WriteLine("closeServer");
+            // disconnect from the server
             CommandChannel.Instance.Disconnect();
         }
 
         private string ToXml(string data)
         {
-            Debug.WriteLine("ToXml");
-
-            //Initiate XML stuff
+            // Initiate XML stuff
             StringBuilder sb = new StringBuilder();
             XmlWriterSettings settings = new XmlWriterSettings();
             XmlWriter writer = XmlWriter.Create(sb, settings);
-            // parse data string
+            // validation data
             if (data == "")
             {
                 return data;
             }
+            // get the values
             float lon = getData(data, 0);
             float lat = getData(data, 1);
             float throttle = getData(data, 2);
             float rudder = getData(data, 3);
 
+            // save the values in xml
             writer.WriteStartDocument();
             writer.WriteStartElement("Sampling");
             writer.WriteElementString("Lon", lon.ToString());
@@ -245,10 +199,6 @@ namespace Ex3.Controllers
             writer.WriteEndDocument();
             writer.Flush();
             return sb.ToString();
-        }
-        public string Search(string name)
-        {
-            return "";
         }
     }
 }

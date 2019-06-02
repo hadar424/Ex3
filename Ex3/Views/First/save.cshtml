@@ -31,15 +31,17 @@
         <canvas id="myCanvas"></canvas>
         <script>
 
+                                       alert("script");
 
-         window.onbeforeunload = function () {
-                $.post("@Url.Action("CloseServer")");
-            }
+       @*window.onbeforeunload = function () {
+            $.post("@Url.Action("CloseServer")");
+            return null;
+        };*@
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
 
-       c.width = window.innerWidth;
+        c.width = window.innerWidth;
         c.height = window.outerHeight;
 
         var firstTime = 0;

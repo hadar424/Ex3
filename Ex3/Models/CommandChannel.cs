@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -79,7 +80,7 @@ namespace Ex3.Models
         {
             if (client.Connected)
             {
-                stream =client.GetStream();
+                stream = client.GetStream();
                 reader = new StreamReader(stream);
           
                 Byte[] bufferLon = Encoding.ASCII.GetBytes(getLon + "\r\n");
@@ -117,8 +118,13 @@ namespace Ex3.Models
 
         public void Disconnect()
         {
+            if (client == null) {
+                return;
+            }
             if (client.Connected)
             {
+                stream.Close();
+                reader.Close();
                 // close socket
                 client.Close();
             }

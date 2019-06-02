@@ -27,15 +27,15 @@
     </head>
 
     <body style="margin:0">
-
         <canvas id="myCanvas"></canvas>
-          <script>  
-              var firstTime = 0;
+       <script>  
+                   alert("display");
+       var firstTime = 0;
 
-            window.onbeforeunload = function () {
-                $.post("@Url.Action("CloseServer")");
-                return null;
-           };
+        @*window.onbeforeunload = function () {
+            $.post("@Url.Action("CloseServer")");
+            return null;
+        };*@
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");

@@ -52,6 +52,8 @@ namespace Ex3.Controllers
             FirstController.Instance.FileName = file;
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
+
+            CommandChannel.Instance.Disconnect();
             CommandChannel.Instance.Start();
             // read from file
             Session["time"] = time;
@@ -106,6 +108,7 @@ namespace Ex3.Controllers
             // save the parameters and send to the model
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
+            CommandChannel.Instance.Disconnect();
             CommandChannel.Instance.Start();
 
             // get the data from  the server and save in the view bag
@@ -137,6 +140,8 @@ namespace Ex3.Controllers
             // save the parameters and send to the model
             CommandChannel.Instance.ServerIP = ip;
             CommandChannel.Instance.CommandPort = port;
+
+            CommandChannel.Instance.Disconnect();
             CommandChannel.Instance.Start();
 
             // sand the time to view

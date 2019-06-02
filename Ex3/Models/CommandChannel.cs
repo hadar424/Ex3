@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -52,8 +51,10 @@ namespace Ex3.Models
 
         public void Start()
         {
+            // start connection with the server
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             client = new TcpClient();
+            // while the client is not connected already - try to connect
             while (!client.Connected)
             {
                 try
@@ -70,19 +71,28 @@ namespace Ex3.Models
 
         public double HandleInfo(string info)
         {
+            // split the info from the server and get the value
             string parseString = "";
             string[] values = info.Split('\'');
             parseString = values[1];
-            return double.Parse(parseString);
+            double value;
+            // try convert the value string to double
+            if (!double.TryParse(parseString, out value))
+            {
+                throw new System.FormatException();
+            }
+            return value;
         }
 
         public string GetInfo()
         {
+            // if the client is connected
             if (client.Connected)
             {
                 stream = client.GetStream();
                 reader = new StreamReader(stream);
           
+                // get from the server the values
                 Byte[] bufferLon = Encoding.ASCII.GetBytes(getLon + "\r\n");
                 Byte[] bufferLat = Encoding.ASCII.GetBytes(getLat + "\r\n");
                 Byte[] bufferThrottle = Encoding.ASCII.GetBytes(getThrottle + "\r\n");
@@ -108,9 +118,9 @@ namespace Ex3.Models
                 // get rudder
                 string rudder = reader.ReadLine();
 
+                // create data string and return it
                 string data = HandleInfo(lon).ToString() + " " + HandleInfo(lat).ToString() + " " +
                      HandleInfo(throttle).ToString() + " " + HandleInfo(rudder).ToString();
-      
                 return data;
             }
             return "";
@@ -118,14 +128,15 @@ namespace Ex3.Models
 
         public void Disconnect()
         {
+            // check if there is client
             if (client == null) {
                 return;
             }
+            // if the client is connected, close it
             if (client.Connected)
             {
                 stream.Close();
                 reader.Close();
-                // close socket
                 client.Close();
             }
 

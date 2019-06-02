@@ -99,8 +99,7 @@ namespace Ex3.Controllers
             // check if the string is IP or file name (if file name - goto Load function)
             System.Net.IPAddress IP = null;
             // check which kind of argument we received 
-            bool check = IPAddress.TryParse(ip, out IP);
-            if (check == false)
+            if (!IPAddress.TryParse(ip, out IP))
             {
                 return Load(ip, port);
             }
@@ -128,6 +127,7 @@ namespace Ex3.Controllers
             string[] values = line.Split(' ');
             parseString = values[index];
             float value;
+            // convert from string to float
             if (!float.TryParse(parseString, out value))
             {
                 throw new System.FormatException();

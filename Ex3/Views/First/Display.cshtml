@@ -29,13 +29,8 @@
     <body style="margin:0">
         <canvas id="myCanvas"></canvas>
        <script>  
-                   alert("display");
        var firstTime = 0;
 
-        @*window.onbeforeunload = function () {
-            $.post("@Url.Action("CloseServer")");
-            return null;
-        };*@
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
@@ -45,8 +40,6 @@
         
         var oldLon;
         var oldLat;
-
-
 
         var IntervalTime = 1000 / @Session["time"]
         myTimer = (function () {

@@ -30,8 +30,6 @@
 
     <canvas id="myCanvas"></canvas>
     <script>
-                           alert("load");
-
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
 
@@ -45,8 +43,8 @@
         var IntervalTime = 1000 / @Session["time"]
         myTimer = (function () {
             $.post("@Url.Action("GetLonLatFile")").done(function (xml) {
-                if (xml == "") {
-                    alert("the animation is over!");
+            if (xml == "") {
+                alert("the animation is over!");
                 clearInterval(interval)
             }
             var xmlDoc = $.parseXML(xml),
@@ -82,8 +80,6 @@
 
             });
         });
-
-
 
         var interval = setInterval(myTimer, IntervalTime);
         myTimer();

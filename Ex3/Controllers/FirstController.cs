@@ -124,7 +124,12 @@ namespace Ex3.Controllers
             string parseString = "";
             string[] values = line.Split(' ');
             parseString = values[index];
-            return float.Parse(parseString);
+            float value;
+            if (!float.TryParse(parseString, out value))
+            {
+                throw new System.FormatException();
+            }
+            return value;
         }
 
         public ActionResult Display(string ip, int port, int time)
@@ -153,6 +158,10 @@ namespace Ex3.Controllers
             // get the lon and lat values from the file
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + FirstController.Instance.FileName + ".txt";
             string data = "";
+            // check if file exists
+            if (!System.IO.File.Exists(filePath)) { 
+                throw new FileNotFoundException();
+             }
             // read all the lines from the file and split them
             string[] lines = System.IO.File.ReadAllLines(filePath);
             if (FirstController.Instance.ArrayIndex < lines.Length)

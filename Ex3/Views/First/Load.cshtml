@@ -31,11 +31,10 @@
     <canvas id="myCanvas"></canvas>
     <script>
 
-
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
 
-             c.width = window.innerWidth;
+        c.width = window.innerWidth;
         c.height = window.outerHeight;
 
         var firstTime = 0;
@@ -46,8 +45,9 @@
         myTimer = (function () {
             $.post("@Url.Action("GetLonLatFile")").done(function (xml) {
                 if (xml == "") {
-                    clearInterval(interval)
-                }
+                    alert("the animation is over!");
+                clearInterval(interval)
+            }
             var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc);
             lon = $xml.find("Lon").text();

@@ -262,9 +262,8 @@ namespace Ex3.Controllers
                 return data;
             }
             // get the values
-            Random rnd = new Random();
-            float lon = getData(data, 0) + rnd.Next(50);
-            float lat = getData(data, 1) + rnd.Next(50);
+            float lon = getData(data, 0);
+            float lat = getData(data, 1);
             float throttle = getData(data, 2);
             float rudder = getData(data, 3);
 

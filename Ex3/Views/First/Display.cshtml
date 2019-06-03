@@ -41,7 +41,7 @@
         var oldLon;
         var oldLat;
 
-        var IntervalTime = 1000 / @Session["time"]
+        var IntervalTime = 1000 * @Session["time"]
         var myTimer = (function () {
         $.post( "@Url.Action("GetLonLat")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
@@ -52,11 +52,10 @@
             lon =  parseFloat(lon);
             lat = parseFloat(lat);
             if (lon == 200 || lat == 200) {
-                alert("wrong values");
                 clearInterval(interval)
             }
             var newLon = (lon + 180) * (c.width / 360);
-            var newLat = (lat - 90) * (c.height / -180);
+            var newLat = (lat + 90) * (c.height / 180);
             if (firstTime == 0) {
                 ctx.beginPath();
                 ctx.arc(newLon, newLat, 4, 0, 2 * Math.PI);

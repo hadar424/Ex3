@@ -42,7 +42,7 @@
         var oldLat;
 
         var IntervalTime = 1000 / @Session["time"]
-        myTimer = (function () {
+        var myTimer = (function () {
         $.post( "@Url.Action("GetLonLat")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc),

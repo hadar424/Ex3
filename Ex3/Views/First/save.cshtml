@@ -41,8 +41,12 @@
         var oldLon;
         var oldLat;
 
+        Stop = (function () {
+            clearInterval(interval)
+        });
+
         var IntervalTime = 1000 / @Session["time"]
-        myTimer = (function () {
+        var myTimer = (function () {
         $.post( "@Url.Action("SaveToFile")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
                 $xml = $(xmlDoc);
@@ -83,7 +87,7 @@
         });
 
         var interval = setInterval(myTimer, IntervalTime);
-        setTimeout(function () { clearInterval(interval) }, @Session["saveTime"] * 1000);
+        setTimeout(Stop, @Session["saveTime"] * 1000);
         myTimer();
 
         </script>
